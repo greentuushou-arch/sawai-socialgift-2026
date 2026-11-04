@@ -153,10 +153,25 @@
     update();
   }
 
+  var CAMPAIGN_END = new Date('2026-12-01T09:59:00+09:00');
+  var DAY_MS = 86400000;
+  var HOUR_MS = 3600000;
+
+  function startEventCountdown() {
+    var left = document.getElementById('eventLeft');
+    var remain = CAMPAIGN_END - new Date();
+    if (remain <= 0) return;
+    left.textContent = remain < DAY_MS
+      ? 'あと' + Math.ceil(remain / HOUR_MS) + '時間'
+      : 'あと' + Math.ceil(remain / DAY_MS) + '日';
+    left.hidden = false;
+  }
+
   renderGrid('grid1000', ITEMS_1000, true);
   renderGrid('gridGift', ITEMS_GIFT, false);
   startChat();
   startConfetti();
   startReveal();
   startFloatCta();
+  startEventCountdown();
 })();
