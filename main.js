@@ -156,15 +156,36 @@
   var CAMPAIGN_END = new Date('2026-12-01T09:59:00+09:00');
   var DAY_MS = 86400000;
   var HOUR_MS = 3600000;
+  var MINUTE_MS = 60000;
+  var SECOND_MS = 1000;
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+  function countdownHtml(remain) {
+    var days = Math.floor(remain / DAY_MS);
+    var hours = Math.floor((remain % DAY_MS) / HOUR_MS);
+    var minutes = Math.floor((remain % HOUR_MS) / MINUTE_MS);
+    var seconds = Math.floor((remain % MINUTE_MS) / SECOND_MS);
+    return '<span class="cd-label">終了まで</span>' +
+      (days > 0 ? '<b>' + days + '</b>日' : '') +
+      '<b>' + pad(hours) + '</b>時間<b>' + pad(minutes) + '</b>分<b>' + pad(seconds) + '</b>秒';
+  }
 
   function startEventCountdown() {
     var left = document.getElementById('eventLeft');
-    var remain = CAMPAIGN_END - new Date();
-    if (remain <= 0) return;
-    left.textContent = remain < DAY_MS
-      ? 'あと' + Math.ceil(remain / HOUR_MS) + '時間'
-      : 'あと' + Math.ceil(remain / DAY_MS) + '日';
-    left.hidden = false;
+    var timer;
+    function tick() {
+      var remain = CAMPAIGN_END - new Date();
+      if (remain <= 0) {
+        left.hidden = true;
+        clearInterval(timer);
+        return;
+      }
+      left.innerHTML = countdownHtml(remain);
+      left.hidden = false;
+    }
+    tick();
+    timer = setInterval(tick, SECOND_MS);
   }
 
   renderGrid('grid1000', ITEMS_1000, true);
